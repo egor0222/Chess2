@@ -1,0 +1,12 @@
+/build/
+/cmake-build-*/
+/CMakeFiles/
+/CMakeCache.txt
+/cmake_install.cmake
+/Makefile
+/compile_commands.json
+/chess
+*.o
+*.obj
+*.a
+*.so

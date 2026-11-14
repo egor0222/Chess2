@@ -1,0 +1,4 @@
+cmake -S . -B build
+cmake --build build
+cmake -E copy_directory assets/images build/images
+(cd build && ./chess)
