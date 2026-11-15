@@ -13,6 +13,7 @@ add_executable(chess
 	src/global.cpp
 	src/draw.cpp
 	src/TextureLoader.cpp
+	src/logic.cpp
 )
 
 target_include_directories(chess PRIVATE include)

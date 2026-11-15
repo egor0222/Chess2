@@ -75,7 +75,7 @@ void Draw::canSel(Vector2i pos) {
 
 void Draw::select() {
 	if (selFirst) {
-		if (!rightMove(firstSelected, canSelected, &ff)) return;
+		if (!check_move(firstSelected, canSelected, &ff, ff(firstSelected).color)) return;
 		FigureMove(firstSelected, canSelected);
 		selFirst = false;
 		std::cout << "Moved: " << canSelected.x << ' ' << canSelected.y << std::endl;

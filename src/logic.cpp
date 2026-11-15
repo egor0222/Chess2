@@ -1,12 +1,14 @@
 #include "logic.hpp"
 
-bool BishopMove(Vector2i pos, Vector2i move, Field& field) {
-	int x = pos.x - move.x;
-	int y = pos.y - move.y;
-	if (std::abs(x) != std::abs(y)) return false;
+bool BishopMove(Vector2i pos, Vector2i move, Field& field, bool color) {
+	if (field(Vector2i(pos.x, pos.y)).color != color) return false;
+	int dx = pos.x - move.x;
+	int dy = pos.y - move.y;
 
-	int xstep = (x > 0) ? 1 : -1;
-	int ystep = (y > 0) ? 1 : -1;
+	if (std::abs(dx) != std::abs(dy)) return false;
+
+	int xstep = (dx > 0) ? 1 : -1;
+	int ystep = (dy > 0) ? 1 : -1;
 	int xpos = pos.x;
 	int ypos = pos.y;
 	for (; xpos != move.x || ypos != move.y; xpos += xstep, ypos += ystep) {
@@ -15,7 +17,8 @@ bool BishopMove(Vector2i pos, Vector2i move, Field& field) {
 	return true;
 }
 
-bool RookMove(Vector2i pos, Vector2i move, Field& field) {
+bool RookMove(Vector2i pos, Vector2i move, Field& field, bool color) {
+	if (field(Vector2i(pos.x, pos.y)).color != color) return false;
 	int x = pos.x - move.x;
 	int y = pos.y - move.y;
 	if (x == 0) {
@@ -33,17 +36,20 @@ bool RookMove(Vector2i pos, Vector2i move, Field& field) {
 	return false;
 }
 
-bool QueenMove(Vector2i pos, Vector2i move, Field& field) {
+bool QueenMove(Vector2i pos, Vector2i move, Field& field, bool color) {
+	if (field(Vector2i(pos.x, pos.y)).color != color) return false;
 	int x = pos.x - move.x;
 	int y = pos.y - move.y;
 	if ((x == 0 && y != 0) || (x != 0 && y == 0)) {
-		return RookMove(pos, move, field);
+		return RookMove(pos, move, field, color);
 	}
-	if (std::abs(x) == std::abs(y)) return BishopMove(pos, move, field);
+	if (std::abs(x) == std::abs(y)) return BishopMove(pos, move, field, color);
 	return false;
 }
 
-bool KingMove(Vector2i pos, Vector2i move, Field& field) {
+bool KingMove(Vector2i pos, Vector2i move, Field& field, bool color) {
+	if (field(Vector2i(pos.x, pos.y)).color != color) return false;
+
 	int x = pos.x - move.x;
 	int y = pos.y - move.y;
 	if (std::abs(x) > 1 || std::abs(y) > 1) return false;
@@ -52,14 +58,16 @@ bool KingMove(Vector2i pos, Vector2i move, Field& field) {
 		for (int j = 0; j < TABLE_SIZE; j++) {
 			if (field(Vector2i(i, j)).color != field(pos).color) {
 				if (field(Vector2i(i, j)).type == Pieces::KING) continue;
-				if (rightMove(Vector2i(i, j), move, &field)) return false;
+				if (check_move(Vector2i(i, j), move, &field, color)) return false;
 			}
 		}
 	}
 	return true;
 }
 
-bool KnightMove(Vector2i pos, Vector2i move, Field& field) {
+bool KnightMove(Vector2i pos, Vector2i move, Field& field, bool color) {
+	if (field(Vector2i(pos.x, pos.y)).color != color) return false;
+
 	int x = pos.x - move.x;
 	int y = pos.y - move.y;
 	if ((std::abs(x) == 1 && std::abs(y) == 2) || (std::abs(x) == 2 && std::abs(y) == 1)) {
@@ -68,7 +76,9 @@ bool KnightMove(Vector2i pos, Vector2i move, Field& field) {
 	return false;
 }
 
-bool PawnMove(Vector2i pos, Vector2i move, Field& field) {
+bool PawnMove(Vector2i pos, Vector2i move, Field& field, bool color) {
+	if (field(Vector2i(pos.x, pos.y)).color != color) return false;
+    
 	int x = pos.x - move.x;
 	int y = pos.y - move.y;
 	if (field(pos).color == White) {
@@ -84,20 +94,24 @@ bool PawnMove(Vector2i pos, Vector2i move, Field& field) {
 	return false;
 }
 
-bool rightMove(Vector2i pos, Vector2i move, Field* field) {
+bool check_move(Vector2i pos, Vector2i move, Field* field, bool color) {
+    if (pos == move) return false;
+
 	switch ((*field)(pos).type) {
+	case Pieces::NONE:
+		return false;
 	case Pieces::KING:
-		return KingMove(pos, move, *field);
+		return KingMove(pos, move, *field, color);
 	case Pieces::KNIGHT:
-		return KnightMove(pos, move, *field);
+		return KnightMove(pos, move, *field, color);
 	case Pieces::PAWN:
-		return PawnMove(pos, move, *field);
+		return PawnMove(pos, move, *field, color);
 	case Pieces::BISHOP:
-		return BishopMove(pos, move, *field);
+		return BishopMove(pos, move, *field, color);
 	case Pieces::QUEEN:
-		return QueenMove(pos, move, *field);
+		return QueenMove(pos, move, *field, color);
 	case Pieces::ROOK:
-		return RookMove(pos, move, *field);
+		return RookMove(pos, move, *field, color);
 	default:
 		return false;
 	}

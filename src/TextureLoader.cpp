@@ -36,13 +36,13 @@ void TextureLoader::getData() {
 		this->size++;
 	}
 
-	this->data = new Tcb[this->size];
+	data = new Tcb[this->size];
 	size_t iter = 0;
 	for (const auto& entry : std::filesystem::directory_iterator(imageDirectory)) {
 		if (entry.is_regular_file()) {
-			this->data[iter].name = entry.path().filename().generic_string();
-			this->data[iter].texture = new Texture();
-			this->data[iter].texture->loadFromFile(entry.path().generic_string());
+			data[iter].name = entry.path().filename().generic_string();
+			data[iter].texture = new Texture();
+			data[iter].texture->loadFromFile(entry.path().generic_string());
 			iter++;
 		}
 	}
