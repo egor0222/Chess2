@@ -1,5 +1,5 @@
 #include "draw.hpp"
-
+#include "logic.hpp"
 #include <iostream>
 
 std::string PieceToStr(Pieces pp) {
